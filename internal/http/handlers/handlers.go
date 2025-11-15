@@ -15,7 +15,7 @@ import (
 )
 
 type Handler struct {
-	svc        *service.Service
+	svc        service.Service
 	adminToken string
 	userToken  string
 }
@@ -29,7 +29,7 @@ type apiError struct {
 	Message string `json:"message"`
 }
 
-func New(svc *service.Service, adminToken, userToken string) *Handler {
+func New(svc service.Service, adminToken, userToken string) *Handler {
 	return &Handler{svc: svc, adminToken: adminToken, userToken: userToken}
 }
 

@@ -265,6 +265,7 @@ func (r *Repository) MergePullRequest(ctx context.Context, prID string) (domain.
 func (r *Repository) ReassignReviewer(ctx context.Context, prID, oldReviewerID string) (domain.PullRequest, string, error) {
 	var updated domain.PullRequest
 	var replacement string
+
 	pr, err := r.loadPullRequest(ctx, r.pool, prID)
 	if err != nil {
 		return updated, "", err
@@ -282,22 +283,29 @@ func (r *Repository) ReassignReviewer(ctx context.Context, prID, oldReviewerID s
 			assigned = true
 		}
 	}
+
 	if !assigned {
 		return updated, "", domain.ErrNotAssigned
 	}
+
 	reviewer, err := r.getUser(ctx, r.pool, oldReviewerID)
 	if err != nil {
 		return updated, "", err
 	}
+
 	if reviewer.TeamName == "" {
 		return updated, "", domain.ErrTeamNotFound
 	}
+
 	candidates, err := r.pool.Query(ctx, `
         SELECT user_id
         FROM users
-        WHERE team_name = $1 AND is_active = TRUE AND user_id <> $2
+        WHERE team_name = $1 
+          AND is_active = TRUE 
+          AND user_id <> $2 
+          AND user_id <> $3
         ORDER BY random()
-    `, reviewer.TeamName, oldReviewerID)
+    `, reviewer.TeamName, oldReviewerID, pr.AuthorID)
 	if err != nil {
 		return updated, "", err
 	}
@@ -322,19 +330,18 @@ func (r *Repository) ReassignReviewer(ctx context.Context, prID, oldReviewerID s
 	if replacement == "" {
 		return updated, "", domain.ErrNoCandidate
 	}
+
 	err = r.withTx(ctx, func(tx pgx.Tx) error {
-		_, err = tx.Exec(ctx, `
-            DELETE FROM pull_request_reviewers
-            WHERE pull_request_id = $1 AND reviewer_id = $2
-        `, prID, oldReviewerID)
+		_, err := tx.Exec(ctx,
+			"DELETE FROM pull_request_reviewers WHERE pull_request_id = $1 AND reviewer_id = $2",
+			prID, oldReviewerID)
 		if err != nil {
 			return err
 		}
 
-		_, err = tx.Exec(ctx, `
-            INSERT INTO pull_request_reviewers (pull_request_id, reviewer_id)
-            VALUES ($1, $2)
-        `, prID, replacement)
+		_, err = tx.Exec(ctx,
+			"INSERT INTO pull_request_reviewers (pull_request_id, reviewer_id) VALUES ($1, $2)",
+			prID, replacement)
 		if err != nil {
 			return err
 		}
@@ -345,6 +352,7 @@ func (r *Repository) ReassignReviewer(ctx context.Context, prID, oldReviewerID s
 	if err != nil {
 		return updated, "", err
 	}
+
 	updated, err = r.loadPullRequest(ctx, r.pool, prID)
 	if err != nil {
 		return updated, "", err
