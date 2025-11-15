@@ -1,0 +1,95 @@
+# This file contains the configuration for golangci-lint
+# See https://golangci-lint.run/usage/configuration/ for more information
+
+version: 2
+
+run:
+  timeout: 5m
+  tests: true
+  skip-dirs:
+    - bin
+    - vendor
+  skip-files:
+    - ".*\\.pb\\.go$"
+    - ".*\\.gen\\.go$"
+
+output:
+  format: colored-line-number
+  print-issued-lines: true
+  print-linter-name: true
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+  gocyclo:
+    min-complexity: 20
+  govet:
+    check-shadowing: true
+  lll:
+    line-length: 150
+  revive:
+    min-confidence: 0
+    severity: warning
+  staticcheck:
+    checks: ["all"]
+
+linters:
+  disable-all: true
+  enable:
+    - errcheck
+    - gosec
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+issues:
+  exclude-rules:
+    - path: _test\.go
+      linters:
+        - errcheck
+        - gocyclo
+        - lll
+        - noctx
+    - path: cmd/
+      linters:
+        - revive
+    - path: internal/config/
+      linters:
+        - revive
+        - lll
+    - path: internal/http/handlers/
+      linters:
+        - revive
+        - lll
+        - unparam
+    - path: internal/repository/
+      linters:
+        - revive
+        - lll
+    - path: internal/service/
+      linters:
+        - revive
+    - path: internal/domain/
+      linters:
+        - revive
+    - path: internal/storage/
+      linters:
+        - revive
+  max-issues-per-linter: 0
+  max-same-issues: 0
+  exclude:
+    - Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked
+    - Error return value of .* is not checked
+    - export of .* should have comment or be unexported
+    - package comment should be of the form
+    - comment on exported (function|method|type|const) .* should be of the form
+    - comment on exported (var|const) .* should be of the form
+    - weak cryptographic primitive
+    - package-comments
+    - exported
+    - unused-parameter
+    - exitAfterDefer
+    - G112
+  exclude-use-default: false

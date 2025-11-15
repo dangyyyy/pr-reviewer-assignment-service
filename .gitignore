@@ -1,0 +1,11 @@
+/bin/
+/build/
+/dist/
+/tmp/
+/vendor/
+*.log
+*.out
+coverage/
+.env
+.idea/
+.DS_Store
