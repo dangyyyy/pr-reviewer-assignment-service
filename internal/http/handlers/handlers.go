@@ -65,11 +65,11 @@ func (h *Handler) health(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) createTeam(w http.ResponseWriter, r *http.Request) {
 	var req createTeamRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "invalid JSON payload")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid JSON payload")
 		return
 	}
 	if err := req.validate(); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", err.Error())
 		return
 	}
 
@@ -98,7 +98,7 @@ func (h *Handler) createTeam(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getTeam(w http.ResponseWriter, r *http.Request) {
 	teamName := strings.TrimSpace(r.URL.Query().Get("team_name"))
 	if teamName == "" {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "team_name is required")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "team_name is required")
 		return
 	}
 
@@ -115,11 +115,11 @@ func (h *Handler) getTeam(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) setUserActive(w http.ResponseWriter, r *http.Request) {
 	var req setUserActiveRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "invalid JSON payload")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid JSON payload")
 		return
 	}
 	if err := req.validate(); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", err.Error())
 		return
 	}
 
@@ -138,11 +138,11 @@ func (h *Handler) setUserActive(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) createPullRequest(w http.ResponseWriter, r *http.Request) {
 	var req createPullRequestRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "invalid JSON payload")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid JSON payload")
 		return
 	}
 	if err := req.validate(); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", err.Error())
 		return
 	}
 
@@ -161,11 +161,11 @@ func (h *Handler) createPullRequest(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) mergePullRequest(w http.ResponseWriter, r *http.Request) {
 	var req mergePullRequestRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "invalid JSON payload")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid JSON payload")
 		return
 	}
 	if err := req.validate(); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", err.Error())
 		return
 	}
 
@@ -184,11 +184,11 @@ func (h *Handler) mergePullRequest(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) reassignReviewer(w http.ResponseWriter, r *http.Request) {
 	var req reassignReviewerRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "invalid JSON payload")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "invalid JSON payload")
 		return
 	}
 	if err := req.validate(); err != nil {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", err.Error())
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", err.Error())
 		return
 	}
 
@@ -208,7 +208,7 @@ func (h *Handler) reassignReviewer(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) getUserReviewAssignments(w http.ResponseWriter, r *http.Request) {
 	userID := strings.TrimSpace(r.URL.Query().Get("user_id"))
 	if userID == "" {
-		writeError(w, http.StatusBadRequest, "NOT_FOUND", "user_id is required")
+		writeError(w, http.StatusBadRequest, "BAD_REQUEST", "user_id is required")
 		return
 	}
 
@@ -277,7 +277,7 @@ func (h *Handler) getPRStats(w http.ResponseWriter, r *http.Request) {
 func (h *Handler) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !h.authorize(r, h.adminToken) {
-			writeError(w, http.StatusUnauthorized, "NOT_FOUND", "unauthorized")
+			writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 			return
 		}
 		next(w, r)
@@ -287,7 +287,7 @@ func (h *Handler) requireAdmin(next http.HandlerFunc) http.HandlerFunc {
 func (h *Handler) requireUserOrAdmin(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if !h.authorize(r, h.adminToken, h.userToken) {
-			writeError(w, http.StatusUnauthorized, "NOT_FOUND", "unauthorized")
+			writeError(w, http.StatusUnauthorized, "UNAUTHORIZED", "unauthorized")
 			return
 		}
 		next(w, r)
@@ -425,7 +425,7 @@ func mapDomainError(err error) (int, string, string) {
 	case errors.Is(err, domain.ErrUserNotFound), errors.Is(err, domain.ErrTeamNotFound), errors.Is(err, domain.ErrPRNotFound):
 		return http.StatusNotFound, "NOT_FOUND", err.Error()
 	default:
-		return http.StatusInternalServerError, "NOT_FOUND", "internal error"
+		return http.StatusInternalServerError, "INTERNAL_ERROR", "internal error"
 	}
 }
 
