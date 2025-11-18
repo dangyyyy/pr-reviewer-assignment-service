@@ -29,6 +29,8 @@
 git clone <repository-url>
 cd pr-reviewer-assignment-service
 
+# Создать env файл
+make env
 # Запустить сервис и базу данных
 docker-compose up
 
@@ -52,6 +54,9 @@ curl http://localhost:8080/health
 ### Использование Makefile
 
 ```bash
+#Cоздать env файл
+make env
+
 # Собрать бинарный файл
 make build
 
