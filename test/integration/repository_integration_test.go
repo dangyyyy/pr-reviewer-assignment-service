@@ -427,13 +427,6 @@ func TestReassignReviewer(t *testing.T) {
 	})
 
 	t.Run("попытка переназначить не назначенного ревьюера", func(t *testing.T) {
-		_, _, err := repo.ReassignReviewer(ctx, "pr1", "u4")
-		if len(pr.AssignedReviewers) < 3 {
-			// u4 может не быть назначен если random выбрал других
-			assert.ErrorIs(t, err, domain.ErrNotAssigned)
-		}
-	})
-	t.Run("попытка переназначить не назначенного ревьюера", func(t *testing.T) {
 		// Создать команду где точно известны назначенные ревьюеры
 		testTeam := domain.Team{
 			Name: "test-not-assigned",
