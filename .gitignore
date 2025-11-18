@@ -6,6 +6,6 @@
 *.log
 *.out
 coverage/
-.env
+# .env
 .idea/
 .DS_Store

@@ -29,8 +29,8 @@
 git clone <repository-url>
 cd pr-reviewer-assignment-service
 
-# Создать env файл
-make env
+# Создать env файл (НЕ ТРЕБУЕТСЯ, ФАЙЛ ЗАЛИТ НА ГИТХБА)
+# make env
 # Запустить сервис и базу данных
 docker-compose up
 
