@@ -7,6 +7,7 @@ NC=\033[0m
 
 help: ## Показать справку
 	@echo "$(GREEN)Доступные команды:$(NC)"
+	@echo "  $(YELLOW)env$(NC)                       - Создать .env из .env.example"
 	@echo "  $(YELLOW)build$(NC)                     - Собрать приложение"
 	@echo "  $(YELLOW)run$(NC)                       - Запустить приложение локально"
 	@echo "  $(YELLOW)test$(NC)                      - Запустить unit тесты"
@@ -21,6 +22,10 @@ help: ## Показать справку
 	@echo "  $(YELLOW)lint$(NC)                      - Запустить линтер"
 	@echo "  $(YELLOW)fmt$(NC)                       - Форматировать код"
 	@echo "  $(YELLOW)deps$(NC)                      - Установить зависимости"
+
+env: ## Создать .env из .env.example
+	cp .env.example .env
+	@echo ".env создан"
 
 build: ## Собрать приложение
 	@echo "$(GREEN)Сборка приложения...$(NC)"
